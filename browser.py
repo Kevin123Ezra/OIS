@@ -1,12 +1,10 @@
 import sys
 import os
-from PyQt5.QtCore import QSize, QUrl, Qt
-from PyQt5.QtWidgets import QApplication, QMainWindow, QToolBar, QAction, QLineEdit, QInputDialog
-from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5.QtWebEngineWidgets import *
 
-from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineFindFlags
-
-# Functions definition and creation of classes:
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -14,15 +12,13 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("OIS Browser")
         self.setMinimumSize(QSize(1024, 750))
         self.setWindowIcon(QIcon('unnamed.png'))
-        self.browser.setUrl(QUrl("https://google.com"))
+        self.browser.setUrl(QUrl("https://www.google.com/?hl=en"))
         self.setCentralWidget(self.browser)
         self.showMaximized()
 
-        # Load search history from file
-        self.search_history_file = 'search_history.txt'
+        self.search_history_file = 'history/search_history.txt'
         self.load_search_history()
 
-        # Coding for buttons and their functionalities:
         # navbar
         navbar = QToolBar()
         self.addToolBar(navbar)
@@ -57,18 +53,15 @@ class MainWindow(QMainWindow):
         self.browser.urlChanged.connect(self.update_url)
 
     def navigate_home(self):
-        self.browser.setUrl(QUrl("https://google.com"))
+        self.browser.setUrl(QUrl("https://www.google.com/?hl=en"))
 
     def navigate_to_url(self):
         input_text = self.url_bar.text()
         if not input_text.startswith(("http://", "https://")):
-            # Construct Google search URL
-            search_url = "https://www.google.com/search?q=" + input_text
-            self.browser.setUrl(QUrl(search_url))
+            input_text = "https://www.google.com/search?q=" + input_text + "&hl=en"
+            self.browser.setUrl(QUrl(input_text))
         else:
             self.browser.setUrl(QUrl(input_text))
-
-        # Add the searched URL to search history
         self.search_history.append(input_text)
         self.save_search_history()
 
@@ -83,7 +76,7 @@ class MainWindow(QMainWindow):
             self.search_history = []
 
     def save_search_history(self):
-        with open(self.search_history_file, 'w') as file:
+        with open(self.search_history_file, 'a') as file:
             for item in self.search_history:
                 file.write(item + '\n')
 
@@ -94,11 +87,7 @@ class MainWindow(QMainWindow):
     def find_text(self):
         text, ok = QInputDialog.getText(self, 'Find Text', 'Enter text to find:')
         if ok and text:
-            options = QWebEngineFindFlags()
-            options |= QWebEngineFindFlags.FindCaseSensitively  # Case sensitive search
-            options |= QWebEngineFindFlags.FindWrapsAroundDocument  # Wrap around document
-            options |= QWebEngineFindFlags.FindBackward  # Search backward
-            self.browser.findText(text, options)
+            self.browser.findText(text)
 
 app = QApplication(sys.argv)
 window = MainWindow()
