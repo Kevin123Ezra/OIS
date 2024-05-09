@@ -2,9 +2,9 @@
 
 This browser was created for the **Grade 12 Board Practicals** by 
 
- - Kevin Santhosh (I did most of the work) (Actually all of it!)
- - Adithyan
- - Jayesh
+ - Kevin Santhosh (I did most of the work) ~~(Actually all of it!)~~
+ - Adithyan (Emotional Support)
+ - Jayesh (Provided the laptop during school)
 
 of 12 F (Batch 2024-25)
 
