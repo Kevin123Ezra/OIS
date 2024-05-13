@@ -30,10 +30,14 @@ class MainWindow(QMainWindow):
         self.tabs.setTabsClosable(True)
         self.tabs.tabCloseRequested.connect(self.close_tab)
 
-        self.add_tab()
-
         navbar = QToolBar()
         self.addToolBar(navbar)
+
+        # Home button
+        home_btn = QAction(QIcon("icons/home_icon.png"), 'Home', self)
+        home_btn.setStatusTip("Home")
+        home_btn.triggered.connect(self.navigate_home)
+        navbar.addAction(home_btn)
 
         # Back button
         back_btn = QAction(QIcon("icons/Arrow_back_left.png"), 'Back', self)
@@ -53,11 +57,12 @@ class MainWindow(QMainWindow):
         reload_btn.triggered.connect(self.reload_page)
         navbar.addAction(reload_btn)
 
-        # Home button
-        home_btn = QAction(QIcon("icons/home_icon.png"), 'Home', self)
-        home_btn.setStatusTip("Home")
-        home_btn.triggered.connect(self.navigate_home)
-        navbar.addAction(home_btn)
+        # Search button
+        search_btn = QAction(QIcon("icons/search_icon.png"), 'Search', self)
+        search_btn.setShortcut("Ctrl+F")
+        search_btn.setStatusTip("Search")
+        search_btn.triggered.connect(self.search_text)
+        navbar.addAction(search_btn)
 
         # Secure/Unsecure site indicator
         self.secure_icon = QLabel()
@@ -72,22 +77,31 @@ class MainWindow(QMainWindow):
         navbar.addWidget(self.url_bar)
 
         # Add tab button
-        add_tab_btn = QAction(QIcon("icons/Add_tab_icon.png"), 'Add Tab', self)
+        add_tab_btn = QAction(QIcon("icons/add_tab_icon.png"), 'Add Tab', self)
         add_tab_btn.setStatusTip("Add Tab")
         add_tab_btn.triggered.connect(self.add_tab)
         navbar.addAction(add_tab_btn)
 
+        # Set icon size for the toolbar
+        navbar.setIconSize(QSize(24, 24))
+
         self.tabs.currentChanged.connect(self.update_current_tab)
+
+        self.add_tab()
 
     def add_tab(self):
         new_tab = BrowserTab()
         self.tabs.addTab(new_tab, "New Tab")
+        new_tab.browser.setUrl(QUrl("https://www.google.com/?hl=en"))  # Set default URL for new tab
         self.tabs.setCurrentWidget(new_tab)
 
     def current_browser(self):
         current_tab_index = self.tabs.currentIndex()
         current_tab_widget = self.tabs.widget(current_tab_index)
         return current_tab_widget.browser
+
+    def navigate_home(self):
+        self.current_browser().setUrl(QUrl("https://www.google.com/?hl=en"))
 
     def navigate_back(self):
         self.current_browser().back()
@@ -97,9 +111,6 @@ class MainWindow(QMainWindow):
 
     def reload_page(self):
         self.current_browser().reload()
-
-    def navigate_home(self):
-        self.current_browser().setUrl(QUrl("https://www.google.com/?hl=en"))
 
     def navigate_to_url(self):
         input_text = self.url_bar.text()
@@ -113,6 +124,12 @@ class MainWindow(QMainWindow):
         current_tab_index = self.tabs.currentIndex()
         current_tab_widget = self.tabs.widget(current_tab_index)
         current_tab_url = current_tab_widget.browser.url().toString()
+        if current_tab_url == "https://www.google.com/?hl=en":
+            self.tabs.setTabText(current_tab_index, "New Tab")
+        else:
+            current_tab_widget.browser.page().titleChanged.connect(
+                lambda title: self.tabs.setTabText(current_tab_index, title))
+
         self.url_bar.setText(current_tab_url)
 
     def close_tab(self, index):
@@ -120,6 +137,11 @@ class MainWindow(QMainWindow):
             self.tabs.removeTab(index)
         else:
             QApplication.quit()
+
+    def search_text(self):
+        text, ok = QInputDialog.getText(self, 'Find Text', 'Enter text to find:')
+        if ok and text:
+            self.current_browser().findText(text)
 
 
 app = QApplication(sys.argv)
