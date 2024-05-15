@@ -1,5 +1,5 @@
 # Welcome to OIS Browser!
-
+## Purpose:
 This browser was created for the **Grade 12 Board Practicals** by 
 
  - Kevin Santhosh (I did most of the work) (cause I am good in python)
@@ -20,3 +20,11 @@ As of 9th May 2024, we have
  6. Secure/Unsecure Icon
  7. Multiple Tabs
 
+## To do:
+ 1. Download Manager
+ 2. Profiles
+ 3. Groups
+ 4. Bookmarks 
+ 5. Dark Mode
+ 6. Volume Mixer
+ 7. RAM Limiter/Increaser
