@@ -10,11 +10,34 @@ class BrowserTab(QWidget):
     def __init__(self, parent=None):
         super(BrowserTab, self).__init__(parent)
         layout = QVBoxLayout()
-
         self.browser = QWebEngineView()
         layout.addWidget(self.browser)
-
         self.setLayout(layout)
+
+
+class READMEWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Welcome to OIS Browser")
+        self.setWindowIcon(QIcon('icons/ois.jpg'))
+        self.setGeometry(0, 0, 800, 600)
+        self.move(QApplication.desktop().screen().rect().center() - self.rect().center())  # Center the window
+
+        layout = QVBoxLayout()
+        self.setLayout(layout)
+        
+        readme_text = QLabel()
+        readme_text.setAlignment(Qt.AlignLeft)
+        readme_text.setWordWrap(True)
+        readme_text.setOpenExternalLinks(True)
+        with open("README.md", "r") as readme_file:
+            readme_text.setText(readme_file.read())
+        layout.addWidget(readme_text)
+
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setWidget(readme_text)
+        layout.addWidget(scroll_area)
 
 
 class MainWindow(QMainWindow):
@@ -22,7 +45,7 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
         self.setWindowTitle("OIS Browser")
         self.setMinimumSize(QSize(1350, 750))
-        self.setWindowIcon(QIcon('unnamed.png'))
+        self.setWindowIcon(QIcon('icons/ois.jpg'))
         self.showMaximized()
 
         self.tabs = QTabWidget()
@@ -147,4 +170,8 @@ class MainWindow(QMainWindow):
 app = QApplication(sys.argv)
 window = MainWindow()
 window.show()
-app.exec_()
+
+readme_window = READMEWindow()
+readme_window.show()
+
+sys.exit(app.exec_())
