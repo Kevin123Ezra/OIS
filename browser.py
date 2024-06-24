@@ -5,6 +5,8 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtWebEngineWidgets import *
 
+import pickle
+from datetime import date
 
 class BrowserTab(QWidget):
     def __init__(self, parent=None):
@@ -14,14 +16,13 @@ class BrowserTab(QWidget):
         layout.addWidget(self.browser)
         self.setLayout(layout)
 
-
 class READMEWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Welcome to OIS Browser")
         self.setWindowIcon(QIcon('icons/ois.jpg'))
         self.setGeometry(0, 0, 800, 600)
-        self.move(QApplication.desktop().screen().rect().center() - self.rect().center())  # Center the window
+        self.move(QApplication.desktop().screen().rect().center() - self.rect().center())
 
         layout = QVBoxLayout()
         self.setLayout(layout)
@@ -38,7 +39,6 @@ class READMEWindow(QWidget):
         scroll_area.setWidgetResizable(True)
         scroll_area.setWidget(readme_text)
         layout.addWidget(scroll_area)
-
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -114,9 +114,11 @@ class MainWindow(QMainWindow):
 
     def add_tab(self):
         new_tab = BrowserTab()
+        file_path = os.path.join(os.path.dirname(__file__), "search_engine.html")
+        new_tab.browser.setUrl(QUrl.fromLocalFile(file_path))
         self.tabs.addTab(new_tab, "New Tab")
-        new_tab.browser.setUrl(QUrl("https://www.google.com/?hl=en"))  # Set default URL for new tab
         self.tabs.setCurrentWidget(new_tab)
+
 
     def current_browser(self):
         current_tab_index = self.tabs.currentIndex()
@@ -124,7 +126,7 @@ class MainWindow(QMainWindow):
         return current_tab_widget.browser
 
     def navigate_home(self):
-        self.current_browser().setUrl(QUrl("https://www.google.com/?hl=en"))
+        self.current_browser().setUrl(QUrl("file://" + os.path.abspath("search_engine.html")))
 
     def navigate_back(self):
         self.current_browser().back()
@@ -136,12 +138,16 @@ class MainWindow(QMainWindow):
         self.current_browser().reload()
 
     def navigate_to_url(self):
+        today = date.today()
+        history_location = "history/search_history_" + str(today) + ".dat"
         input_text = self.url_bar.text()
         if not input_text.startswith(("http://", "https://")):
             input_text = "https://www.google.com/search?q=" + input_text + "&hl=en"
             self.current_browser().setUrl(QUrl(input_text))
         else:
             self.current_browser().setUrl(QUrl(input_text))
+        with open(history_location, "ab") as history:
+            pickle.dump(input_text, history)
 
     def update_current_tab(self):
         current_tab_index = self.tabs.currentIndex()
@@ -166,12 +172,15 @@ class MainWindow(QMainWindow):
         if ok and text:
             self.current_browser().findText(text)
 
-
 app = QApplication(sys.argv)
-window = MainWindow()
-window.show()
 
 readme_window = READMEWindow()
 readme_window.show()
 
+def show_main_window():
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec_())
+
+readme_window.destroyed.connect(show_main_window)
 sys.exit(app.exec_())
