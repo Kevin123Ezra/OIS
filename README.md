@@ -26,3 +26,8 @@ As of 24th June 2024, we have
  5. Dark Mode
  6. Volume Mixer
  7. RAM Limiter/Increaser
+
+## Contact:
+- [Kevin](https://www.instagram.com/kevn_ezra/)
+- [Adithyan](https://www.instagram.com/adiiwh0/)
+- [Jayesh](https://www.instagram.com/fleezen_/)
