@@ -10,7 +10,7 @@ This browser was created for the **Grade 12 Board Practicals** by
 of 12 F (Batch 2024-25)
 
 ## Features:
-As of 9th May 2024, we have
+As of 24th June 2024, we have
 
  1. Back/Forward/Reload/Home
  2. Custom Search Engine
